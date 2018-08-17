@@ -1,0 +1,35 @@
+{
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "properties": {
+    "identityPubKey": {
+      "$id": "/properties/identityPubKey",
+      "type": "string",
+      "title": "The Identitypubkey Schema ",
+      "examples": [
+        ""
+      ],
+      "minLength": 44,
+      "maxLength": 44
+    },
+    "orderId": {
+      "$id": "/properties/orderId",
+      "type": "string",
+      "title": "The Orderid Schema ",
+      "examples": [
+        ""
+      ],
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "packet": {
+      "$id": "/properties/packet",
+      "type": "object"
+    }
+  },
+  "required": [
+    "identityPubKey",
+    "orderId",
+    "packet"
+  ]
+}
