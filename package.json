@@ -1,5 +1,5 @@
 {
-  "name": "consensus-server",
+  "name": "consensus-api",
   "version": "1.0.0",
   "description": "api server for the consensus payment gateway",
   "main": "lib/index.js",
@@ -24,11 +24,11 @@
   },
   "homepage": "https://github.com/umran/consensus-server#readme",
   "dependencies": {
-    "ajv": "^6.5.2",
+    "ajv": "^6.5.3",
     "body-parser": "^1.18.3",
     "chai": "^4.1.2",
-    "consensus-core": "1.0.0",
+    "consensus-core": "2.0.1",
     "express": "^4.16.3",
-    "mongoose": "^5.2.8"
+    "mongoose": "^5.2.9"
   }
 }

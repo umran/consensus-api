@@ -2,10 +2,10 @@
   "$id": "http://example.com/example.json",
   "type": "object",
   "properties": {
-    "identityPubKey": {
-      "$id": "/properties/identityPubKey",
+    "identityPublicKey": {
+      "$id": "/properties/identityPublicKey",
       "type": "string",
-      "title": "The Identitypubkey Schema ",
+      "title": "The Identitypublickey Schema ",
       "examples": [
         ""
       ],
@@ -28,7 +28,7 @@
     }
   },
   "required": [
-    "identityPubKey",
+    "identityPublicKey",
     "orderId",
     "packet"
   ]

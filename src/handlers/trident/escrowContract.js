@@ -1,10 +1,11 @@
 const expect = require('chai').expect
-const messages = require('consensus-core').messages
+const trident = require('consensus-core').protocols.trident
 const transactions = require('consensus-core').transactions
 
-const Authority = require('../../models/authority.js')
-const Order = require('../../models/order.js')
-const PromiseOfPayment = require('../../models/promiseOfPayment.js')
+const Authority = require('../../models/authority')
+const Order = require('../../models/order')
+const PromiseOfPayment = require('../../models/promiseOfPayment')
+const EscrowContract = require('../../models/escrowContract')
 
 
 module.exports = async function(req, res, next) {
@@ -13,7 +14,7 @@ module.exports = async function(req, res, next) {
 
   // validate and verify the packet
   try {
-    const validatedPacket = new messages.EscrowContract({
+    var validatedPacket = new trident.EscrowContract({
       type: 'receive',
       packet: body.packet
     })
@@ -34,7 +35,7 @@ module.exports = async function(req, res, next) {
 
   // check that the id key is a registered one
   try {
-    const authority = await Authority.findOne({ identityPublicKey: body.identityPublicKey })
+    var authority = await Authority.findOne({ identityPublicKey: body.identityPublicKey })
   } catch(err) {
     next(err)
     return
@@ -47,7 +48,7 @@ module.exports = async function(req, res, next) {
 
   // check that the orderId exists
   try {
-    const order = await Order.findOne({ orderId: body.orderId })
+    var order = await Order.findOne({ orderId: body.orderId })
   } catch(err) {
     next(err)
     return
@@ -60,7 +61,7 @@ module.exports = async function(req, res, next) {
 
   // retrieve the promiseOfPayment for the order
   try {
-    const promiseOfPayment = await PromiseOfPayment.findOne({ order: order._id }).populate({ path: 'invoice' })
+    var promiseOfPayment = await PromiseOfPayment.findOne({ order: order._id }).populate({ path: 'invoice' })
   } catch(err) {
     next(err)
     return
@@ -97,6 +98,20 @@ module.exports = async function(req, res, next) {
   }
 
   // save escrowContract in database with a reference to the promiseOfPayment and orderId
+  var escrowContract = new EscrowContract({
+    order: order._id,
+    promiseOfPayment: promiseOfPayment._id,
+    meta: meta,
+    date_modified: new Date()
+  })
+
+  try{
+    escrowContract = escrowContract.save()
+  } catch(err) {
+    next(err)
+    return
+  }
 
   // respond with success status code if all of the above completes
+  res.json({status: 200, message: 'escrowContract accepted'})
 }

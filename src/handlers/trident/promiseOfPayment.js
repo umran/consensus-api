@@ -1,10 +1,11 @@
 const expect = require('chai').expect
-const messages = require('consensus-core').messages
+const trident = require('consensus-core').protocols.trident
 const transactions = require('consensus-core').transactions
 
-const Customer = require('../../models/customer.js')
-const Order = require('../../models/order.js')
-const Invoice = require('../../models/invoice.js')
+const Customer = require('../../models/customer')
+const Order = require('../../models/order')
+const Invoice = require('../../models/invoice')
+const PromiseOfPayment = require('../../models/promiseOfPayment')
 
 
 module.exports = async function(req, res, next) {
@@ -13,7 +14,7 @@ module.exports = async function(req, res, next) {
 
   // validate and verify the packet
   try {
-    const validatedPacket = new messages.PromiseOfPayment({
+    var validatedPacket = new trident.PromiseOfPayment({
       type: 'receive',
       packet: body.packet
     })
@@ -34,7 +35,7 @@ module.exports = async function(req, res, next) {
 
   // check that the id key is a registered one
   try {
-    const customer = await Customer.findOne({ identityPublicKey: body.identityPublicKey })
+    var customer = await Customer.findOne({ identityPublicKey: body.identityPublicKey })
   } catch(err) {
     next(err)
     return
@@ -47,7 +48,7 @@ module.exports = async function(req, res, next) {
 
   // check that the orderId exists
   try {
-    const order = await Order.findOne({ orderId: body.orderId })
+    var order = await Order.findOne({ orderId: body.orderId })
   } catch(err) {
     next(err)
     return
@@ -60,7 +61,7 @@ module.exports = async function(req, res, next) {
 
   // retrieve the invoice for the order
   try {
-    const invoice = await Invoice.findOne({ order: order._id })
+    var invoice = await Invoice.findOne({ order: order._id })
   } catch(err) {
     next(err)
     return
@@ -93,7 +94,21 @@ module.exports = async function(req, res, next) {
     return
   }
 
-  // save promiseOfPayment in database with a reference to the invoice and orderId
+  // save promiseOfPayment in database with a reference to the invoice and order
+  var promiseOfPayment = new PromiseOfPayment({
+    order: order._id,
+    invoice: invoice._id,
+    meta: meta,
+    date_modified: new Date()
+  })
+
+  try{
+    promiseOfPayment = promiseOfPayment.save()
+  } catch(err) {
+    next(err)
+    return
+  }
 
   // respond with success status code if all of the above completes
+  res.json({status: 200, message: 'promiseOfPayment accepted'})
 }
