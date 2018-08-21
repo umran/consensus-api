@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const trident = require('consensus-core').protocols.trident
-const transactions = require('consensus-core').transactions
+const chains = require('consensus-core').chains
 
 const Customer = require('../../models/customer')
 const Order = require('../../models/order')
@@ -73,7 +73,7 @@ module.exports = async function(req, res, next) {
   }
 
   // check the transaction chain between the invoice and the promiseOfPayment by constructing the authoritative promiseOfPayment and verifying the signature of the received promiseOfPayment
-  const chain = new transactions.TransactionChain({
+  const chain = new chains.TridentChain({
     merchant: invoice.meta.senderId,
     customer: body.identityPublicKey,
   })
